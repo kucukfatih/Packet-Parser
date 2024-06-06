@@ -27,6 +27,7 @@ module packet_decoder(
     reg vlan_flag;
     reg payload_overflow;
     reg [15:0] temp_payload;
+    reg [1:0] overflow_keep;
     
     localparam MTU = 1522;
      
@@ -103,21 +104,21 @@ module packet_decoder(
                                         4'b0000 : begin
                                                     payload [31:16] <= temp_payload;
                                                     payload_keep <= 4'b0011;
-                                                    byte_cnt <= 1'b0;
+                                                    byte_cnt <= 0;
                                                     payload_valid <= 1'b0;
                                                     payload_last_valid <= 1'b1;
                                         end
                                         4'b0001 : begin
                                                     payload [31:8] <= {temp_payload,packet4_byte [31:24]};
                                                     payload_keep <= 4'b0111;
-                                                    byte_cnt <= 1'b0;
+                                                    byte_cnt <= 0;
                                                     payload_valid <= 1'b0;
                                                     payload_last_valid <= 1'b1;
                                         end
                                         4'b0011 : begin
                                                     payload <= {temp_payload,packet4_byte [31:16]};
                                                     payload_keep <= 4'b1111;
-                                                    byte_cnt <= 1'b0;
+                                                    byte_cnt <= 0;
                                                     payload_valid <= 1'b0;
                                                     payload_last_valid <= 1'b1;
 
@@ -126,11 +127,13 @@ module packet_decoder(
                                                     payload  <= {temp_payload,packet4_byte [31:16]};
                                                     temp_payload [15:8] <= packet4_byte [15:8]; 
                                                     payload_overflow <= 1'b1;
+                                                    overflow_keep <= 2'b01;
                                         end
                                         4'b1111 : begin
                                                     payload <= {temp_payload,packet4_byte [31:16]};
                                                     temp_payload [15:8] <= packet4_byte [15:0]; 
                                                     payload_overflow <= 1'b1;
+                                                    overflow_keep <= 2'b11;
 
                                         end
                                         default : begin
@@ -144,8 +147,8 @@ module packet_decoder(
                                 end
                             end
                             else begin
-                                case (keep)
-                                    4'b0111 : begin
+                                case (overflow_keep)
+                                    2'b01 : begin
                                                 payload [31:24] <= temp_payload [15:8];
                                                 payload_valid <= 1'b0;
                                                 payload_last_valid <= 1'b1;
@@ -154,7 +157,7 @@ module packet_decoder(
                                                 payload_overflow <= 0;
 
                                     end
-                                    4'b1111 : begin
+                                    2'b11 : begin
                                                 payload [31:16] <= temp_payload;
                                                 payload_valid <= 1'b0;
                                                 payload_last_valid <= 1'b1;
