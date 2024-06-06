@@ -12,6 +12,8 @@ module eth_parser_TB;
     wire [47:0] src_addr;
     wire [31:0] vlan_tag;
     wire [15:0] eth_type;
+    wire payload_last_valid;
+    wire [3:0] payload_keep;
     wire dest_addr_valid;
     wire src_addr_valid;
     wire vlan_tag_valid;
@@ -29,6 +31,8 @@ module eth_parser_TB;
     .src_addr(src_addr),
     .vlan_tag(vlan_tag),
     .eth_type(eth_type),
+    .payload_last_valid(payload_last_valid),
+    .payload_keep(payload_keep),
     .dest_addr_valid(dest_addr_valid),
     .src_addr_valid(src_addr_valid),
     .vlan_tag_valid(vlan_tag_valid),
@@ -46,7 +50,7 @@ module eth_parser_TB;
     #15
     rst = 1;
     data_valid = 1'b1;
-    keep = 4'b0000;
+    keep = 4'b0011;
     packet4_byte = 32'hA1AAAAAA;
     #10
     packet4_byte = 32'hAAAAAAAB;
