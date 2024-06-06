@@ -9,13 +9,13 @@ module packet_decoder(
     input wire last_valid,
     input wire [3:0] keep,
     output reg [31:0] payload,
+    output reg [3:0] payload_keep,
     output reg payload_valid,
+    output reg payload_last_valid,
     output reg [47:0] dest_addr, // 6 byte
     output reg [47:0] src_addr, // 6 byte
     output reg [31:0] vlan_tag, // 4 byte
     output reg [15:0] eth_type, // 2 byte
-    output reg payload_last_valid,
-    output reg [3:0] payload_keep,
     output wire dest_addr_valid,
     output wire src_addr_valid,
     output wire vlan_tag_valid,
